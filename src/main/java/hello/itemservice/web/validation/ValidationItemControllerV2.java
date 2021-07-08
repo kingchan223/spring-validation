@@ -189,24 +189,28 @@ public class ValidationItemControllerV2 {
 
 //    @PostMapping("/add")
     public String addItemV4(@ModelAttribute Item item, BindingResult bindingResult, RedirectAttributes redirectAttributes, Model model) {
-        log.info("objectName={}", bindingResult.getObjectName());
-        log.info("target={}", bindingResult.getTarget());
+//        System.out.println("=======================================");
+//        log.info("objectName={}", bindingResult.getObjectName());
+//        log.info("target={}", bindingResult.getTarget());
+//        log.info("bindingResult = {}", bindingResult);
+//        System.out.println("=======================================");
 
         //검증로직
         if(!StringUtils.hasText(item.getItemName())){
             bindingResult.rejectValue("itemName", "required");
         }
+//        log.info("bindingResult = {}", bindingResult);
         //위와 같다.
         //ValidationUtils.rejectIfEmptyOrWhitespace(bindingResult, "itemName", "required");
 
         if(item.getPrice()==null || item.getPrice()<1000 || item.getPrice() > 1000000){
             bindingResult.rejectValue("price", "range", new Object[]{1000, 1000000}, null);
         }
-
+//        log.info("bindingResult = {}", bindingResult);
         if(item.getQuantity()==null || item.getQuantity() >= 9999){
             bindingResult.rejectValue("quantity", "max", new Object[]{9999}, null);
         }
-
+//        log.info("bindingResult = {}", bindingResult);
         //특정 필드가 아닌 복합 룰 검증
         if(item.getPrice()!=null && item.getQuantity()!=null){
             int resultPrice = item.getPrice() * item.getQuantity();
@@ -214,6 +218,7 @@ public class ValidationItemControllerV2 {
                 bindingResult.reject("totalPriceMin", new Object[]{10000, resultPrice}, null);
             }
         }
+//        log.info("bindingResult = {}", bindingResult);
         //검증에 실패하면 다시 입력 폼으로
         if(bindingResult.hasErrors()){
             log.info("bindingResult = {}", bindingResult);
@@ -229,6 +234,7 @@ public class ValidationItemControllerV2 {
 //    @PostMapping("/add")
     public String addItemV5(@ModelAttribute Item item, BindingResult bindingResult, RedirectAttributes redirectAttributes, Model model) {
 
+        /*분리된 검증 로직*/
         if(itemValidator.supports(Item.class)){
             itemValidator.validate(item, bindingResult);
         }
